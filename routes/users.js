@@ -5,6 +5,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/instaclone");
 const userSchema = mongoose.Schema({
   username: String,
   name: String,
+  bio: String,
   email: String,
   profileImage: String,
   password: String,
