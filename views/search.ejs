@@ -8,11 +8,11 @@
       id="inputusername"
       class="ml-1 w-full bg-zinc-900 outline-none text-zinc-400"
       type="text"
-      placeholder="search username"
+      placeholder="Search username"
     />
   </div>
-  <div class="users">
- 
+  <div class="users mt-4">
+    <!-- Users will be dynamically added here -->
   </div>
 </div>
 <script
@@ -20,31 +20,36 @@
   integrity="sha512-JWQFV6OCC2o2x8x46YrEeFEQtzoNV++r9im8O8stv91YwHNykzIS2TbvAlFdeH0GVlpnyd79W0ZGmffcRi++Bw=="
   crossorigin="anonymous"
   referrerpolicy="no-referrer"
->
-</script>
+></script>
 <script>
-    const inp = document.querySelector("#inputusername");
-    let clutter = " "; // Change const to let
-    inp.addEventListener("input", () => {
-      axios.get(`/username/${inp.value}`)
-        .then(function (data) {
-          data.data.forEach(function (elem) {
-            clutter += `<a href="/profile" class="outline-none">
-              <div class="text-white flex items-center gap-2 mt-5">
-                <div class="image w-[11vw] h-[11vw] rounded-full bg-sky-100 overflow-hidden">
+  const inp = document.querySelector("#inputusername");
+
+  inp.addEventListener("input", () => {
+    axios
+      .get(`/username/${inp.value}`)
+      .then(function (data) {
+        let usersHTML = "";
+        data.data.forEach(function (elem) {
+          usersHTML += `
+            <a href="/profile/${elem.username}" class="outline-none block p-4 bg-zinc-800 rounded-md mb-4">
+              <div class="text-white flex items-center gap-4">
+                <div class="image w-16 h-16 rounded-full bg-sky-100 overflow-hidden">
                     <img class="w-full h-full object-cover" src="/images/uploads/${elem.profileImage}" alt="">
                 </div>
                 <div class="text">
-                  <h3>${elem.username}</h3>
-                  <h4 class="text-xs opacity-30 leading-none">${elem.name}</h4>
+                  <h3 class="text-lg font-semibold">${elem.username}</h3>
+                  <h4 class="text-xs opacity-70">${elem.name}</h4>
                 </div>
               </div>
             </a>`;
-          })
-  
-          document.querySelector(".users").innerHTML = clutter;
-        })
-    });
-  </script>
-  
+        });
+
+        document.querySelector(".users").innerHTML = usersHTML;
+      })
+      .catch(function (error) {
+        console.error("Error fetching data: ", error);
+      });
+  });
+</script>
+
 <% include ./partials/footer.ejs %>

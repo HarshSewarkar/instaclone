@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 const userModel = require("./users");
 const postModel = require("./post");
-
 const passport = require("passport");
 var upload = require("./multer");
 
@@ -16,13 +15,15 @@ router.get("/", function (req, res) {
 router.get("/login", function (req, res) {
   res.render("login", { footer: false });
 });
-
+// Assuming you have a route that renders the feed page
 router.get("/feed", isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({ username: req.session.passport.user });
-  const postss = await postModel.find().populate("user"); //populate sirf wahi par work karta hai aagar aapnay schema me id di ho
+  const postss = await postModel.find().populate("user"); // Fetch regular posts
+  // const stories = await postModel.find({ isStory: true }).populate("user"); // Fetch stories
 
   res.render("feed", { footer: true, user, postss });
 });
+
 
 router.get("/profile", isLoggedIn, async function (req, res) {
   const user = await userModel
@@ -45,7 +46,7 @@ router.get("/username/:username", isLoggedIn, async function (req, res) {
 router.get("/like/post/:id", isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({ username: req.session.passport.user });
   const post = await postModel.findOne({ _id: req.params.id });
-  if(post.likes.indexOf(user._id) === -1) {
+  if (post.likes.indexOf(user._id) === -1) {
     post.likes.push(user._id);
   } else {
     post.likes.splice(post.likes.indexOf(user._id), 1);
@@ -125,11 +126,7 @@ router.post("/update", upload.single("image"), async function (req, res, next) {
   await user.save();
   res.redirect("/profile");
 });
-router.post(
-  "/upload",
-  isLoggedIn,
-  upload.single("image"),
-  async function (req, res, next) {
+router.post("/upload",isLoggedIn, upload.single("image"),async function (req, res, next) {
     const user = await userModel.findOne({
       username: req.session.passport.user,
     }); //loggin user hai ismay
@@ -143,4 +140,35 @@ router.post(
     res.redirect("/feed");
   }
 );
+
+router.get("/profile/:username", isLoggedIn, async function (req, res) {
+  const userProfile = await userModel
+    .findOne({
+      username: req.params.username,
+    })
+    .populate("posts");
+  res.render("profile", { footer: true, user: userProfile });
+});
+
+// router.post("/addStory", upload.single("storyImage"), isLoggedIn, async function (req, res) {
+//     const user = await userModel.findOne({ username: req.session.passport.user });
+
+//     // Create a new post for the story
+//     const story = await postModel.create({
+//       picture: req.file.filename,
+//       user: user._id,
+//       caption: "Story", // You can customize the default caption for stories
+//       isStory: true, // Add a flag to identify this as a story
+//     });
+
+//     // Add the story to the user's posts
+//     user.posts.push(story._id);
+//     await user.save();
+
+//     // Send an alert message to the client
+//     res.locals.alertMessage = "Story added successfully!";
+//     res.redirect("/feed");
+ 
+// });
+
 module.exports = router;

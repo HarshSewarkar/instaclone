@@ -70,6 +70,17 @@
     </div>
   </div>
 </div>
+<!-- Update the modal container with post details -->
+<div id="postModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 z-50 hidden">
+  <div class="post-details flex flex-col items-center justify-center h-full">
+    <img id="postImage" class="w-full h-full object-cover" src="" alt="">
+    <div class="post-info text-white text-center mt-4">
+      <h3 class="text-lg font-semibold mb-2" id="postCaption"></h3>
+      <p class="text-xs opacity-70" id="postDate"></p>
+    </div>
+  </div>
+  <i id="closePostModal" class="text-[1.4rem] ri-close-line cursor-pointer text-white absolute top-4 right-4"></i>
+</div>
 
 <script>
 const menuButton = document.getElementById('menu');
@@ -84,6 +95,43 @@ const menuButton = document.getElementById('menu');
     smallMenu.classList.add('hidden');
   });
 </script>
+<!-- Add this script at the end of your HTML -->
+<!-- Update the script to handle post details -->
+<script>
+  const postContainers = document.querySelectorAll('.post');
+  const postModal = document.getElementById('postModal');
+  const postImage = document.getElementById('postImage');
+  const postCaption = document.getElementById('postCaption');
+  const postDate = document.getElementById('postDate');
+  const closePostModalButton = document.getElementById('closePostModal');
+
+  // Attach click event to each post container
+  postContainers.forEach(postContainer => {
+    postContainer.addEventListener('click', () => {
+      const postImageSrc = postContainer.querySelector('img').src;
+      const postCaptionText = postContainer.getAttribute('data-caption');
+      const postDateText = postContainer.getAttribute('data-date');
+      openPostModal(postImageSrc, postCaptionText, postDateText);
+    });
+  });
+
+  // Function to open the post modal
+  function openPostModal(imageSrc, caption, date) {
+    postImage.src = imageSrc;
+    postCaption.textContent = caption;
+    postDate.textContent = date;
+    postModal.classList.remove('hidden');
+  }
+
+  // Function to close the post modal
+  function closePostModal() {
+    postModal.classList.add('hidden');
+  }
+
+  // Attach click event to close button in the post modal
+  closePostModalButton.addEventListener('click', closePostModal);
+</script>
+
 
 <% include ./partials/footer.ejs %>
 

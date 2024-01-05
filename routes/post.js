@@ -14,6 +14,7 @@ const postSchema = mongoose.Schema({
       ref: "user",
     },
   ],
-});
+  // isStory: { type: Boolean, default: true }
+}); 
 
 module.exports = mongoose.model("post", postSchema);
